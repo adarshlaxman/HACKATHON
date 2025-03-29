@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroStrike: Stress Challenge</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Oxanium:wght@300;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="nav-buttons">
+        <button class="dashboard-btn" onclick="window.location.href='../dashboard/'">VIEW DASHBOARD</button>
+    </div>
+    <div class="game-nav">
+        <button class="nav-btn" onclick="window.location.href='../Memory/index.html'">Memory Game</button>
+        <button class="nav-btn" onclick="window.location.href='../criticalthinking/index.html'">Critical Thinking</button>
+        <button class="nav-btn" onclick="window.location.href='../emotion/index.html'">Emotion Game</button>
+        <button class="nav-btn" onclick="window.location.href='../dashboard/index.html'">Dashboard</button>
+    </div>
+    <div class="game-container" id="container">
+        <!-- Welcome Screen -->
+        <div class="screen" id="welcome-screen">
+            <div class="game-header">
+                <h1>NEURO<span>STRIKE</span></h1>
+                <p class="subtitle">Stress Response Challenge</p>
+            </div>
+            <div class="game-description">
+                <p>Your cognitive abilities will be tested under increasing stress conditions.</p>
+                <p>Performance metrics will evaluate your emotional control and decision-making.</p>
+            </div>
+            <div class="form-group">
+                <label for="age">ENTER OPERATOR AGE:</label>
+                <input type="number" id="age" min="14" max="100" required>
+            </div>
+            <button id="start-btn" class="game-btn pulse">BEGIN SIMULATION</button>
+            <div class="game-footer">
+                <p>System Ready | v2.4.7 | NeuralNet Active</p>
+            </div>
+        </div>
+
+        <!-- Test Screen -->
+        <div class="screen" id="test-screen" style="display: none;">
+            <div class="game-hud">
+                <div class="hud-item">
+                    <span>QUESTION</span>
+                    <div class="hud-value" id="question-counter">0/12</div>
+                </div>
+                <div class="hud-item stress-indicator">
+                    <span>NEURAL STRESS</span>
+                    <div class="stress-bar">
+                        <div class="stress-fill" id="stress-level"></div>
+                        <div class="stress-pulse"></div>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span>MISSION TIME</span>
+                    <div class="hud-value" id="timer">00:00</div>
+                </div>
+            </div>
+            
+            <div class="question-terminal">
+                <div class="terminal-header">
+                    <span>COGNITIVE_CHALLENGE.EXE</span>
+                    <div class="terminal-lights">
+                        <span class="light red"></span>
+                        <span class="light yellow"></span>
+                        <span class="light green"></span>
+                    </div>
+                </div>
+                <div class="terminal-body">
+                    <h2 id="question-text" class="typewriter"></h2>
+                    <div class="options-grid" id="options-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="screen" id="results-screen" style="display: none;">
+            <div class="results-header">
+                <h1>MISSION REPORT</h1>
+                <p class="subtitle">Performance Analysis</p>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-gauge">
+                        <div class="gauge-fill" id="emotion-score"></div>
+                        <div class="gauge-label">EMOTION CONTROL</div>
+                    </div>
+                    <div class="result-feedback" id="emotion-feedback"></div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-gauge">
+                        <div class="gauge-fill" id="decision-score"></div>
+                        <div class="gauge-label">DECISION SPEED</div>
+                    </div>
+                    <div class="result-feedback" id="decision-feedback"></div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-gauge">
+                        <div class="gauge-fill" id="stress-score"></div>
+                        <div class="gauge-label">STRESS RESILIENCE</div>
+                    </div>
+                    <div class="result-feedback" id="stress-feedback"></div>
+                </div>
+            </div>
+            
+            <button id="retake-btn" class="game-btn">RE-RUN SIMULATION</button>
+            
+            <div class="game-footer">
+                <p>Analysis Complete | NeuralNet v2.4.7</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js">
+        // Serve different game pages
+app.get('/memory', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/Memory/index.html'));
+});
+
+app.get('/critical-thinking', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/criticalthinking/index.html'));
+});
+
+app.get('/emotion-game', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/emotion/index.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/dashboard/index.html'));
+});
+    </script>
+</body>
+</html>

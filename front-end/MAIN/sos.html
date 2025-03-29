@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS Emergency System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* Add these styles for the back button */
+        .back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #ff4444;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 600px) {
+            .back-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 15px;
+                left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 SOS Emergency System 🚨</h1>
+        <div class="nav-buttons">
+            <button class="btn home" onclick="showHome()"><i class="fas fa-home"></i> Home</button>
+            <button class="btn contacts" onclick="showContacts()"><i class="fas fa-phone-alt"></i> Emergency Contacts</button>
+            <button class="btn report" onclick="showReportForm()"><i class="fas fa-exclamation-triangle"></i> Report Emergency</button>
+            <button class="btn checklist" onclick="showChecklist()"><i class="fas fa-list-check"></i> Emergency Checklist</button>
+        </div>
+        
+        <div id="main-content">
+            <div class="main-box">
+                <h2>🚑 Emergency Assistance 🚓</h2>
+                <button class="btn sos" onclick="sendSOS()"><i class="fas fa-bell"></i> Send SOS</button>
+                <button class="btn hospital" onclick="findHospitals()"><i class="fas fa-hospital"></i> Find Nearby Hospitals</button>
+            </div>
+        </div>
+        
+        <div id="contact-info" class="hidden">
+            <!-- Filled dynamically by JavaScript -->
+        </div>
+        
+        <div id="report-form" class="hidden">
+            <h3>✍ Report Emergency</h3>
+            <select id="emergency-type" class="form-input">
+                <option value="">Select emergency type</option>
+                <option value="medical">Medical Emergency</option>
+                <option value="fire">Fire</option>
+                <option value="crime">Crime in Progress</option>
+                <option value="accident">Traffic Accident</option>
+                <option value="other">Other</option>
+            </select>
+            <textarea id="accident-description" class="form-input" 
+                      placeholder="Describe the emergency (location, people involved, immediate dangers)..."
+                      rows="4" required></textarea>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="need-assistance"> I need immediate assistance
+                </label>
+            </div>
+            <button class="btn submit-report" onclick="submitReport()">
+                <i class="fas fa-paper-plane"></i> Submit Emergency Report
+            </button>
+        </div>
+        
+        <div id="emergency-checklist" class="hidden">
+            <h3>🆘 Emergency Checklist</h3>
+            <ul>
+                <li><input type="checkbox"> Check for immediate dangers</li>
+                <li><input type="checkbox"> Call emergency services</li>
+                <li><input type="checkbox"> Provide first aid if trained</li>
+                <li><input type="checkbox"> Move to safe location if possible</li>
+                <li><input type="checkbox"> Stay on the line with dispatcher</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="main.html" class="back-btn" title="Back to Main">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>

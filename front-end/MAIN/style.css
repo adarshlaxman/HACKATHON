@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #1e1e2d;
+    color: white;
+    padding: 20px;
+    margin: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: #29293d;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+h1, h2, h3 {
+    color: #ff4d4d;
+}
+
+.nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    font-weight: bold;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.home { background-color: #ff4d4d; color: white; }
+.contacts { background-color: #ff4d4d; color: white; }
+.report { background-color: #ff4d4d; color: white; }
+.checklist { background-color: #ff4d4d; color: white; }
+.sos { 
+    background-color: #ff3333; 
+    color: white;
+    animation: pulse 1.5s infinite;
+    margin: 10px;
+}
+.hospital { 
+    background-color: #007bff; 
+    color: white;
+    margin: 10px;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.hidden { display: none; }
+
+.main-box {
+    background: #333348;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background: #333;
+    color: white;
+}
+
+.form-group {
+    margin: 15px 0;
+    text-align: left;
+}
+
+.submit-report {
+    background-color: #ff4d4d;
+    color: white;
+    width: 100%;
+}
+
+.contact-card {
+    background: #333348;
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 8px;
+    text-align: left;
+}
+
+.contact-card h4 {
+    margin-top: 0;
+    color: #ff4d4d;
+}
+
+.emergency-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #ff3333;
+}
+
+#emergency-checklist ul {
+    text-align: left;
+    list-style-type: none;
+    padding: 0;
+}
+
+#emergency-checklist li {
+    padding: 10px;
+    background: #333348;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+#emergency-checklist input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+    .nav-buttons {
+        flex-direction: column;
+    }
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

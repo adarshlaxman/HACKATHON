@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-nav">
+        <button class="nav-btn" onclick="window.location.href='../Memory/index.html'">Memory Game</button>
+        <button class="nav-btn" onclick="window.location.href='../criticalthinking/index.html'">Critical Thinking</button>
+        <button class="nav-btn" onclick="window.location.href='../emotion/index.html'">Emotion Game</button>
+        <button class="nav-btn" onclick="window.location.href='../dashboard/index.html'">Dashboard</button>
+    </div>
+    <h1>Neon Memory Game</h1>
+    
+    <div class="stats">
+        <div class="stat">Moves: <span id="moves">0</span></div>
+        <div class="stat">Pairs: <span id="pairs">0</span>/8</div>
+        <div class="stat">Time: <span id="time">0</span>s</div>
+        <div class="stat">Score: <span id="score">0</span></div>
+    </div>
+    
+    <div id="game"></div>
+    
+    <div class="controls">
+        <button id="reset">New Game</button>
+        <button id="pause">Pause</button>
+        <button id="easy">Easy</button>
+        <button id="normal">Normal</button>
+        <button id="hard">Hard</button>
+    </div>
+    
+    <div class="win-message" id="winMessage">
+        <h2>You Won!</h2>
+        <p>Moves: <span id="finalMoves">0</span></p>
+        <p>Score: <span id="finalScore">0</span></p>
+        <p>Time: <span id="finalTime">0</span>s</p>
+        <button id="playAgain">Play Again</button>
+    </div>
+    
+    <script src="script.js">
+        // Serve different game pages
+app.get('/memory', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/Memory/index.html'));
+});
+
+app.get('/critical-thinking', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/criticalthinking/index.html'));
+});
+
+app.get('/emotion-game', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/emotion/index.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/dashboard/index.html'));
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adjacent Swap Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- <div class="nav-buttons">
+        <button class="dashboard-btn" onclick="window.location.href='../dashboard/'">VIEW DASHBOARD</button>
+    </div>
+    <div class="game-nav">
+        <button class="nav-btn" onclick="window.location.href='../Memory/index.html'">Memory Game</button>
+        <button class="nav-btn" onclick="window.location.href='../criticalthinking/index.html'">Critical Thinking</button>
+        <button class="nav-btn" onclick="window.location.href='../emotion/index.html'">Emotion Game</button>
+        <button class="nav-btn" onclick="window.location.href='../dashboard/index.html'">Dashboard</button>
+    </div> -->
+    <!-- navigation.html -->
+<nav class="neon-nav">
+    <div class="nav-logo" onclick="window.location.href='../main.html'">NEUROGAMES</div>
+    <div class="nav-links">
+        <a href="../criticalthinking/index.html" class="nav-link">
+            <span class="link-text">Critical Thinking</span>
+            <span class="link-glow"></span>
+        </a>
+        <a href="../emotion/index.html" class="nav-link">
+            <span class="link-text">Emotion Game</span>
+            <span class="link-glow"></span>
+        </a>
+        <a href="../tail_matching/index.html" class="nav-link">
+            <span class="link-text">Tail Matching</span>
+            <span class="link-glow"></span>
+        </a>
+        <a href="../dashboard/index.html" class="nav-link">
+            <span class="link-text">Dashboard</span>
+            <span class="link-glow"></span>
+        </a>
+    </div>
+    <!-- <button class="nav-back" onclick="window.location.href='../main.html'">
+        <span>BACK TO HUB</span>
+        <div class="back-arrow"></div>
+    </button> -->
+</nav>
+    <h1>Puzzle SLIDE</h1>
+    <div class="game-info">
+        <div class="moves">Moves: 0</div>
+        <div class="timer"><span class="time">00:00</span></div>
+    </div>
+    <div class="time-controls">
+        <button class="btn time-btn" data-time="0">Unlimited</button>
+        <button class="btn time-btn" data-time="60">1 min</button>
+        <button class="btn time-btn" data-time="120">2 min</button>
+        <button class="btn time-btn" data-time="180">3 min</button>
+        <div class="custom-time">
+            <input type="number" id="custom-minutes" placeholder="Min" min="1">
+            <button class="btn" id="set-custom">Set</button>
+        </div>
+    </div>
+    <div class="grid-container"></div>
+    <div class="controls">
+        <button class="btn new-game">New Game</button>
+        <button class="btn solve-puzzle">Solved Puzzle</button>
+        <input type="file" id="image-upload" hidden accept="image/*">
+        <button class="btn" id="upload-btn">Upload Photo</button>
+        <button class="btn" id="use-numbers" style="display: none;">back to Numbers</button>
+    </div>
+
+    <div class="win-popup">
+        <div class="popup-content">
+            <h2>🎉 Congratulations! 🎉</h2>
+            <div class="score-display">
+                <p>Time: <span class="score-time">00:00</span></p>
+                <p>Moves: <span class="score-moves">0</span></p>
+                <p>Score: <span class="total-score">1000</span> pts</p>
+            </div>
+            <div class="popup-buttons">
+                <button class="btn popup-btn new-game">New Game</button>
+                <button class="btn popup-btn" id="use-custom-photo">Use Custom Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js">
+        // Serve different game pages
+app.get('/memory', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/Memory/index.html'));
+});
+
+app.get('/critical-thinking', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/criticalthinking/index.html'));
+});
+
+app.get('/emotion-game', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/emotion/index.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/dashboard/index.html'));
+});
+    </script>
+</body>
+</html>

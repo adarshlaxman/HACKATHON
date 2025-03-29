@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAlert - Smart Medication Reminder</title>
+    <style>
+        :root {
+            --primary: #05040e;
+            --secondary: #06050f;
+            --accent: #fd79a8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --danger: #ff7675;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .notification-bell {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .notification-bell.active {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .notification-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .medication-form {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #e84393;
+        }
+        
+        .medication-list {
+            margin-top: 30px;
+        }
+        
+        .medication-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .medication-name {
+            font-size: 1.3rem;
+            color: var(--primary);
+            margin: 0 0 5px 0;
+        }
+        
+        .medication-time {
+            font-weight: 500;
+            margin: 5px 0;
+        }
+        
+        .medication-desc {
+            color: #666;
+            margin: 10px 0;
+        }
+        
+        .medication-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .next-dose {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .notification-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-time {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .medication-form {
+                padding: 20px;
+            }
+            
+            .notification-panel {
+                width: 90%;
+                left: 5%;
+                right: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>MediAlert</h1>
+            <p class="tagline">Never miss a dose with smart medication reminders</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="medication-form">
+            <h2>Add New Medication</h2>
+            <form id="medication-form">
+                <div class="form-group">
+                    <label for="med-name">Medication Name</label>
+                    <input type="text" id="med-name" placeholder="e.g., Ibuprofen 200mg" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="med-desc">Description (Optional)</label>
+                    <textarea id="med-desc" rows="2" placeholder="e.g., Take with food"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="med-time">Time to Take</label>
+                    <input type="time" id="med-time" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="med-frequency">Frequency</label>
+                    <select id="med-frequency" required>
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="as_needed">As Needed</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn">Add Reminder</button>
+            </form>
+        </div>
+        
+        <div class="medication-list" id="medication-list">
+            <h2>Your Medications</h2>
+            <!-- Medications will be added here dynamically -->
+        </div>
+    </div>
+    
+    <div class="notification-bell" id="notification-bell">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+    </div>
+    
+    <div class="notification-panel" id="notification-panel">
+        <h3>Recent Alerts</h3>
+        <div id="notification-list">
+            <!-- Notifications will be added here dynamically -->
+        </div>
+    </div>
+    
+    <script>
+        // Medication data storage
+        let medications = JSON.parse(localStorage.getItem('medications')) || [];
+        let activeAlarms = [];
+        
+        // DOM Elements
+        const medForm = document.getElementById('medication-form');
+        const medList = document.getElementById('medication-list');
+        const notificationBell = document.getElementById('notification-bell');
+        const notificationPanel = document.getElementById('notification-panel');
+        const notificationList = document.getElementById('notification-list');
+        
+        // Speech Synthesis (Text-to-Speech)
+        const synth = window.speechSynthesis;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMedicationList();
+            checkForDueMedications();
+            
+            // Load any existing alarms
+            medications.forEach(med => {
+                if (med.isActive) {
+                    setMedicationAlarm(med);
+                }
+            });
+            
+            // Check for due medications every minute
+            setInterval(checkForDueMedications, 60000);
+        });
+        
+        // Form submission - Add new medication
+        medForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const medName = document.getElementById('med-name').value;
+            const medDesc = document.getElementById('med-desc').value;
+            const medTime = document.getElementById('med-time').value;
+            const medFrequency = document.getElementById('med-frequency').value;
+            
+            const newMed = {
+                id: Date.now(),
+                name: medName,
+                description: medDesc,
+                time: medTime,
+                frequency: medFrequency,
+                isActive: true,
+                lastTaken: null,
+                nextDose: calculateNextDose(medTime)
+            };
+            
+            medications.push(newMed);
+            saveToLocalStorage();
+            renderMedicationList();
+            setMedicationAlarm(newMed);
+            
+            // Reset form
+            medForm.reset();
+            
+            // Show confirmation
+            showNotification(`Added ${medName} reminder for ${medTime}`);
+            speak(`Added ${medName} to your medication list. I'll remind you at ${formatTimeForSpeech(medTime)}`);
+        });
+        
+        // Notification bell click
+        notificationBell.addEventListener('click', function() {
+            notificationPanel.style.display = notificationPanel.style.display === 'block' ? 'none' : 'block';
+        });
+        
+        // Render medication list
+        function renderMedicationList() {
+            if (medications.length === 0) {
+                medList.innerHTML = '<p>No medications added yet. Add your first medication above.</p>';
+                return;
+            }
+            
+            medList.innerHTML = '';
+            medications.forEach(med => {
+                const medCard = document.createElement('div');
+                medCard.className = 'medication-card';
+                medCard.innerHTML = `
+                    <h3 class="medication-name">${med.name}</h3>
+                    <p class="medication-time">Take at: ${med.time} (${med.frequency})</p>
+                    ${med.description ? `<p class="medication-desc">${med.description}</p>` : ''}
+                    <p class="next-dose">Next dose: ${med.nextDose ? formatDate(med.nextDose) : 'Now'}</p>
+                    <div class="medication-actions">
+                        <button class="btn" onclick="markAsTaken('${med.id}')">Mark as Taken</button>
+                        <button class="btn btn-danger" onclick="removeMedication('${med.id}')">Remove</button>
+                    </div>
+                `;
+                medList.appendChild(medCard);
+            });
+        }
+        
+        // Set alarm for medication
+        function setMedicationAlarm(medication) {
+            // Clear any existing alarm for this medication
+            clearAlarm(medication.id);
+            
+            const [hours, minutes] = medication.time.split(':').map(Number);
+            const now = new Date();
+            let alarmTime = new Date();
+            
+            alarmTime.setHours(hours);
+            alarmTime.setMinutes(minutes);
+            alarmTime.setSeconds(0);
+            
+            // If the time has already passed today, set for tomorrow
+            if (alarmTime < now) {
+                alarmTime.setDate(alarmTime.getDate() + 1);
+            }
+            
+            const timeUntilAlarm = alarmTime - now;
+            
+            const alarmId = setTimeout(() => {
+                triggerMedicationAlert(medication);
+            }, timeUntilAlarm);
+            
+            activeAlarms.push({ id: medication.id, alarmId: alarmId });
+            
+            // Update next dose time
+            medication.nextDose = alarmTime;
+            saveToLocalStorage();
+            renderMedicationList();
+        }
+        
+        // Trigger medication alert
+        function triggerMedicationAlert(medication) {
+            // Visual notification
+            showNotification(`Time to take ${medication.name}`, true);
+            notificationBell.classList.add('active');
+            
+            // Voice alert
+            let message = `Reminder: It's time to take your ${medication.name}.`;
+            if (medication.description) {
+                message += ` ${medication.description}`;
+            }
+            speak(message);
+            
+            // Schedule next dose if recurring
+            if (medication.frequency === 'daily') {
+                setMedicationAlarm(medication);
+            }
+        }
+        
+        // Mark medication as taken
+        function markAsTaken(medId) {
+            const med = medications.find(m => m.id == medId);
+            if (med) {
+                med.lastTaken = new Date();
+                
+                if (med.frequency === 'daily') {
+                    med.nextDose = new Date(med.lastTaken);
+                    med.nextDose.setDate(med.nextDose.getDate() + 1);
+                    med.nextDose.setHours(parseInt(med.time.split(':')[0]));
+                    med.nextDose.setMinutes(parseInt(med.time.split(':')[1]));
+                    setMedicationAlarm(med);
+                } else {
+                    med.isActive = false;
+                    clearAlarm(med.id);
+                }
+                
+                saveToLocalStorage();
+                renderMedicationList();
+                
+                showNotification(`Marked ${med.name} as taken`);
+                speak(`Marked ${med.name} as taken. ${med.frequency === 'daily' ? 'I will remind you again tomorrow.' : ''}`);
+            }
+        }
+        
+        // Remove medication
+        function removeMedication(medId) {
+            if (confirm('Are you sure you want to remove this medication?')) {
+                medications = medications.filter(m => m.id != medId);
+                clearAlarm(medId);
+                saveToLocalStorage();
+                renderMedicationList();
+                speak('Medication removed');
+            }
+        }
+        
+        // Clear alarm
+        function clearAlarm(medId) {
+            const alarmIndex = activeAlarms.findIndex(a => a.id == medId);
+            if (alarmIndex !== -1) {
+                clearTimeout(activeAlarms[alarmIndex].alarmId);
+                activeAlarms.splice(alarmIndex, 1);
+            }
+        }
+        
+        // Check for due medications
+        function checkForDueMedications() {
+            const now = new Date();
+            medications.forEach(med => {
+                if (med.nextDose && new Date(med.nextDose) <= now && med.isActive) {
+                    triggerMedicationAlert(med);
+                }
+            });
+        }
+        
+        // Show notification
+        function showNotification(message, isImportant = false) {
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'notification-item';
+            if (isImportant) {
+                notificationItem.style.fontWeight = 'bold';
+                notificationItem.style.color = 'var(--accent)';
+            }
+            
+            const now = new Date();
+            notificationItem.innerHTML = `
+                <p>${message}</p>
+                <p class="notification-time">${now.toLocaleTimeString()}</p>
+            `;
+            
+            notificationList.insertBefore(notificationItem, notificationList.firstChild);
+            
+            // Limit to 10 notifications
+            if (notificationList.children.length > 10) {
+                notificationList.removeChild(notificationList.lastChild);
+            }
+        }
+        
+        // Text-to-speech function
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9; // Slightly slower for clarity
+            
+            // Try to use a natural-sounding voice
+            const voices = synth.getVoices();
+            const preferredVoices = ["Google UK English Female", "Microsoft Zira Desktop"];
+            for (const voiceName of preferredVoices) {
+                const voice = voices.find(v => v.name.includes(voiceName));
+                if (voice) {
+                    utterance.voice = voice;
+                    break;
+                }
+            }
+            
+            synth.speak(utterance);
+        }
+        
+        // Helper functions
+        function calculateNextDose(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            const nextDose = new Date();
+            nextDose.setHours(hours);
+            nextDose.setMinutes(minutes);
+            nextDose.setSeconds(0);
+            
+            if (nextDose < new Date()) {
+                nextDose.setDate(nextDose.getDate() + 1);
+            }
+            
+            return nextDose;
+        }
+        
+        function formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleString();
+        }
+        
+        function formatTimeForSpeech(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const hours12 = hours % 12 || 12;
+            return `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+        }
+        
+        function saveToLocalStorage() {
+            localStorage.setItem('medications', JSON.stringify(medications));
+        }
+    </script>
+</body>
+</html>

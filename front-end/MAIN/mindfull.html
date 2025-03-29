@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindful - AI Mood Tracker</title>
+    <style>
+        :root {
+            --primary: #0b091d;
+            --secondary: #0b0a16;
+            --accent: #fd79a8;
+            --happy: #00b894;
+            --neutral: #fdcb6e;
+            --sad: #0984e3;
+            --angry: #d63031;
+            --anxious: #6c5ce7;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+
+        /* Mood Selection */
+        .mood-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            background: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .mood-btn.happy { background: var(--happy); color: white; }
+        .mood-btn.neutral { background: var(--neutral); color: var(--dark); }
+        .mood-btn.sad { background: var(--sad); color: white; }
+        .mood-btn.angry { background: var(--angry); color: white; }
+        .mood-btn.anxious { background: var(--anxious); color: white; }
+
+        .mood-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        /* Mood Journal */
+        .mood-journal {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--secondary);
+        }
+
+        /* Mood Insights */
+        .insights {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .insight-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .insight-card h3 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        /* Mood History */
+        .mood-history {
+            margin-top: 30px;
+        }
+
+        .mood-chart {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            height: 300px;
+            position: relative;
+        }
+
+        .chart-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Recent Entries */
+        .recent-entries {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .entry-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .entry-mood {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .entry-date {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Back Button Styles */
+        .back-btn {
+            position: fixed;
+            bottom: 90px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary);
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .mood-btn {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .back-btn {
+                width: 50px;
+                height: 50px;
+                bottom: 80px;
+                left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Mindful</h1>
+            <p class="tagline">Track your mood, understand your patterns</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Mood Selection -->
+        <div class="mood-selector">
+            <button class="mood-btn happy" onclick="logMood('happy')">
+                <span class="mood-icon">😊</span>
+                <span>Happy</span>
+            </button>
+            <button class="mood-btn neutral" onclick="logMood('neutral')">
+                <span class="mood-icon">😐</span>
+                <span>Neutral</span>
+            </button>
+            <button class="mood-btn sad" onclick="logMood('sad')">
+                <span class="mood-icon">😢</span>
+                <span>Sad</span>
+            </button>
+            <button class="mood-btn angry" onclick="logMood('angry')">
+                <span class="mood-icon">😠</span>
+                <span>Angry</span>
+            </button>
+            <button class="mood-btn anxious" onclick="logMood('anxious')">
+                <span class="mood-icon">😰</span>
+                <span>Anxious</span>
+            </button>
+        </div>
+
+        <!-- Mood Journal -->
+        <div class="mood-journal" id="mood-journal" style="display: none;">
+            <h2>How are you feeling?</h2>
+            <form id="journal-form">
+                <div class="form-group">
+                    <label for="mood-notes">Notes (optional)</label>
+                    <textarea id="mood-notes" placeholder="What's influencing your mood today?"></textarea>
+                </div>
+                <button type="submit" class="btn">Save Entry</button>
+            </form>
+        </div>
+
+        <!-- AI Insights -->
+        <div class="insights" id="insights" style="display: none;">
+            <h2>Your Mood Insights</h2>
+            <div class="insight-card" id="mood-pattern">
+                <h3>Pattern Recognition</h3>
+                <p id="pattern-text">Analyzing your mood patterns...</p>
+            </div>
+            <div class="insight-card" id="mood-suggestion">
+                <h3>Suggested Activity</h3>
+                <p id="suggestion-text">Loading personalized recommendation...</p>
+            </div>
+        </div>
+
+        <!-- Mood History -->
+        <div class="mood-history">
+            <h2>Your Mood History</h2>
+            <div class="mood-chart">
+                <div class="chart-placeholder" id="chart-placeholder">
+                    Mood chart will appear here after a few entries
+                </div>
+                <!-- Chart will be rendered here -->
+                <canvas id="mood-chart" style="display: none;"></canvas>
+            </div>
+
+            <h3>Recent Entries</h3>
+            <div class="recent-entries" id="recent-entries">
+                <!-- Entries will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="main.html" class="back-btn" title="Back to Main">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+    </a>
+
+    <!-- Reset Button -->
+    <button id="reset-data-btn" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 12px;
+        cursor: pointer;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        z-index: 1000;
+    ">Reset</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Mood data storage
+        let moodEntries = JSON.parse(localStorage.getItem('moodEntries')) || [];
+        let currentMood = null;
+
+        // DOM Elements
+        const moodJournal = document.getElementById('mood-journal');
+        const journalForm = document.getElementById('journal-form');
+        const insightsSection = document.getElementById('insights');
+        const recentEntriesContainer = document.getElementById('recent-entries');
+        const patternText = document.getElementById('pattern-text');
+        const suggestionText = document.getElementById('suggestion-text');
+        const chartPlaceholder = document.getElementById('chart-placeholder');
+        const moodChartCanvas = document.getElementById('mood-chart');
+        let moodChart = null;
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderRecentEntries();
+            renderMoodChart();
+            
+            // Form submission
+            journalForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveMoodEntry();
+            });
+
+            // Reset button functionality
+            document.getElementById('reset-data-btn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete ALL your mood entries? This cannot be undone.')) {
+                    localStorage.removeItem('moodEntries');
+                    moodEntries = [];
+                    renderRecentEntries();
+                    renderMoodChart();
+                    if (insightsSection.style.display === 'block') {
+                        insightsSection.style.display = 'none';
+                    }
+                    alert('All mood data has been reset.');
+                }
+            });
+        });
+
+        // Log mood function
+        function logMood(mood) {
+            currentMood = mood;
+            moodJournal.style.display = 'block';
+            moodJournal.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Save mood entry
+        function saveMoodEntry() {
+            const notes = document.getElementById('mood-notes').value;
+            const entry = {
+                id: Date.now(),
+                mood: currentMood,
+                notes: notes,
+                date: new Date()
+            };
+
+            moodEntries.push(entry);
+            saveToLocalStorage();
+            
+            // Reset form
+            journalForm.reset();
+            moodJournal.style.display = 'none';
+            
+            // Show insights
+            showInsights();
+            renderRecentEntries();
+            renderMoodChart();
+        }
+
+        // Show AI insights
+        function showInsights() {
+            insightsSection.style.display = 'block';
+            insightsSection.scrollIntoView({ behavior: 'smooth' });
+            
+            // Analyze mood patterns (simple AI)
+            analyzeMoodPatterns();
+            suggestActivity();
+        }
+
+        // Analyze mood patterns
+        function analyzeMoodPatterns() {
+            if (moodEntries.length < 3) {
+                patternText.textContent = "Keep logging your mood to see patterns emerge.";
+                return;
+            }
+
+            // Simple pattern detection
+            const lastThreeMoods = moodEntries.slice(-3).map(entry => entry.mood);
+            const happyCount = lastThreeMoods.filter(mood => mood === 'happy').length;
+            const negativeCount = lastThreeMoods.filter(mood => 
+                mood === 'sad' || mood === 'angry' || mood === 'anxious'
+            ).length;
+
+            if (happyCount >= 2) {
+                patternText.textContent = "You've been feeling happy recently. Keep doing what makes you feel good!";
+            } else if (negativeCount >= 2) {
+                patternText.textContent = "You've had several challenging moods recently. Let's find ways to help.";
+            } else {
+                patternText.textContent = "Your moods have been mixed recently. Tracking helps identify what affects you.";
+            }
+        }
+
+        // Suggest activities based on mood
+        function suggestActivity() {
+            if (!currentMood) return;
+
+            const suggestions = {
+                happy: [
+                    "Continue what you're doing! Happy moods are great for creative projects.",
+                    "Share your happiness with others - it's contagious!"
+                ],
+                neutral: [
+                    "Try a short mindfulness exercise to boost your mood.",
+                    "Take a walk outside to refresh your mind."
+                ],
+                sad: [
+                    "Practice self-compassion. It's okay to feel this way.",
+                    "Call a friend or loved one for support."
+                ],
+                angry: [
+                    "Try deep breathing: inhale for 4 counts, hold for 4, exhale for 6.",
+                    "Physical activity can help release angry energy safely."
+                ],
+                anxious: [
+                    "Ground yourself with the 5-4-3-2-1 technique: name 5 things you see, 4 you feel, etc.",
+                    "Write down what's worrying you to organize your thoughts."
+                ]
+            };
+
+            const randomSuggestion = suggestions[currentMood][Math.floor(Math.random() * suggestions[currentMood].length)];
+            suggestionText.textContent = randomSuggestion;
+        }
+
+        // Render recent entries
+        function renderRecentEntries() {
+            if (moodEntries.length === 0) {
+                recentEntriesContainer.innerHTML = '<p>No entries yet. Log your first mood above.</p>';
+                return;
+            }
+
+            recentEntriesContainer.innerHTML = '';
+            const recentEntries = moodEntries.slice().reverse().slice(0, 6);
+            
+            recentEntries.forEach(entry => {
+                const entryCard = document.createElement('div');
+                entryCard.className = 'entry-card';
+                
+                const moodColors = {
+                    happy: 'var(--happy)',
+                    neutral: 'var(--neutral)',
+                    sad: 'var(--sad)',
+                    angry: 'var(--angry)',
+                    anxious: 'var(--anxious)'
+                };
+                
+                const moodIcons = {
+                    happy: '😊',
+                    neutral: '😐',
+                    sad: '😢',
+                    angry: '😠',
+                    anxious: '😰'
+                };
+                
+                entryCard.innerHTML = `
+                    <div>
+                        <span class="entry-mood" style="background: ${moodColors[entry.mood]}">${moodIcons[entry.mood]}</span>
+                        <strong>${entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1)}</strong>
+                    </div>
+                    ${entry.notes ? `<p>${entry.notes}</p>` : ''}
+                    <div class="entry-date">${new Date(entry.date).toLocaleString()}</div>
+                `;
+                
+                recentEntriesContainer.appendChild(entryCard);
+            });
+        }
+
+        // Render mood chart
+        function renderMoodChart() {
+            if (moodEntries.length < 3) {
+                chartPlaceholder.style.display = 'flex';
+                moodChartCanvas.style.display = 'none';
+                if (moodChart) moodChart.destroy();
+                return;
+            }
+
+            chartPlaceholder.style.display = 'none';
+            moodChartCanvas.style.display = 'block';
+
+            // Prepare data for chart
+            const last7Entries = moodEntries.slice(-7).reverse();
+            const dates = last7Entries.map(entry => 
+                new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+            );
+            
+            const moodValues = {
+                happy: 4,
+                neutral: 3,
+                anxious: 2,
+                sad: 1,
+                angry: 0
+            };
+            
+            const moodData = last7Entries.map(entry => moodValues[entry.mood]);
+            const moodColors = last7Entries.map(entry => {
+                const colors = {
+                    happy: '#00b894',
+                    neutral: '#fdcb6e',
+                    sad: '#0984e3',
+                    angry: '#d63031',
+                    anxious: '#6c5ce7'
+                };
+                return colors[entry.mood];
+            });
+
+            // Create or update chart
+            const ctx = moodChartCanvas.getContext('2d');
+            
+            if (moodChart) {
+                moodChart.data.labels = dates;
+                moodChart.data.datasets[0].data = moodData;
+                moodChart.data.datasets[0].backgroundColor = moodColors;
+                moodChart.update();
+            } else {
+                moodChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: dates,
+                        datasets: [{
+                            label: 'Mood',
+                            data: moodData,
+                            backgroundColor: moodColors,
+                            borderColor: 'var(--primary)',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                min: 0,
+                                max: 4,
+                                ticks: {
+                                    callback: function(value) {
+                                        const moods = {
+                                            0: 'Angry',
+                                            1: 'Sad',
+                                            2: 'Anxious',
+                                            3: 'Neutral',
+                                            4: 'Happy'
+                                        };
+                                        return moods[value];
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const entry = last7Entries[context.dataIndex];
+                                        let label = entry.mood.charAt(0).toUpperCase() + entry.mood.slice(1);
+                                        if (entry.notes) {
+                                            label += ': ' + entry.notes;
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Helper functions
+        function saveToLocalStorage() {
+            localStorage.setItem('moodEntries', JSON.stringify(moodEntries));
+        }
+    </script>
+</body>
+</html>

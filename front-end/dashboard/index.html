@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Heist Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --cosmic-purple: #6a0dad;
+            --plasma-pink: #ff00ff;
+            --neon-blue: #00f0ff;
+            --dark-space: #0f0f1a;
+            --star-white: #f0f0f0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--dark-space);
+            color: var(--star-white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--neon-blue);
+            padding-bottom: 15px;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+            margin: 0;
+            font-size: 2.2rem;
+        }
+        
+        .last-updated {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .game-tabs {
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+            color: var(--star-white);
+        }
+        
+        .tab-btn.active {
+            background: var(--cosmic-purple);
+            color: white;
+        }
+        
+        .tab-btn:hover {
+            background: var(--plasma-pink);
+            transform: scale(1.05);
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(15, 15, 26, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(106, 13, 173, 0.3);
+            border: 1px solid var(--cosmic-purple);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(106, 13, 173, 0.5);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--cosmic-purple);
+            padding-bottom: 10px;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--plasma-pink);
+            margin: 0;
+            font-size: 1.3rem;
+        }
+        
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--neon-blue);
+            text-align: center;
+        }
+        
+        .card-label {
+            color: #aaa;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        .card-stats {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .chart-section {
+            margin-top: 2rem;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 60vh;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 50vh;
+            }
+        }
+
+        .chart-card {
+            background: var(--dark-space);
+            border: 1px solid var(--neon-blue);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .history-section {
+            margin-top: 40px;
+        }
+        
+        .history-title {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--plasma-pink);
+            border-bottom: 1px solid var(--cosmic-purple);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(106, 13, 173, 0.3);
+        }
+        
+        th {
+            background-color: rgba(106, 13, 173, 0.2);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--neon-blue);
+        }
+        
+        tr:hover {
+            background-color: rgba(106, 13, 173, 0.1);
+        }
+        
+        .accuracy-high {
+            color: #4caf50;
+        }
+        
+        .accuracy-medium {
+            color: #ffc107;
+        }
+        
+        .accuracy-low {
+            color: #f44336;
+        }
+        
+        .refresh-btn {
+            background: var(--cosmic-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: var(--plasma-pink);
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-value {
+                font-size: 2rem;
+            }
+        }
+        .game-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.7);
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.nav-btn {
+    padding: 8px 15px;
+    background: #4a4a4a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s;
+}
+
+.nav-btn:hover {
+    background: #6a6a6a;
+    transform: translateY(-2px);
+}
+    </style>
+</head>
+<body>
+    <div class="game-nav">
+        <button class="nav-btn" onclick="window.location.href='../Memory/index.html'">Memory Game</button>
+        <button class="nav-btn" onclick="window.location.href='../criticalthinking/index.html'">Critical Thinking</button>
+        <button class="nav-btn" onclick="window.location.href='../emotion/index.html'">Emotion Game</button>
+        <button class="nav-btn" onclick="window.location.href='../dashboard/index.html'">Dashboard</button>
+    </div>
+    <div class="dashboard-container">
+        <header>
+            <h1>NEURAL HEIST DASHBOARD</h1>
+            <div class="last-updated" id="lastUpdated">Last updated: Just now</div>
+        </header>
+        
+        <div class="game-tabs">
+            <button class="tab-btn active" data-game="all">All Games</button>
+            <button class="tab-btn" data-game="memory">Memory</button>
+            <button class="tab-btn" data-game="critical">Critical Thinking</button>
+            <button class="tab-btn" data-game="emotion">Emotion</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Memory Game Card -->
+            <div class="card" data-game="memory">
+                <div class="card-header">
+                    <h2 class="card-title">Memory Game</h2>
+                </div>
+                <div class="card-value" id="memoryScore">0</div>
+                <div class="card-label">Latest Score</div>
+                <div class="card-stats">
+                    <div>Best Streak: <span id="memoryStreak">0</span></div>
+                    <div>Accuracy: <span id="memoryAccuracy">0%</span></div>
+                </div>
+            </div>
+            
+            <!-- Critical Thinking Card -->
+            <div class="card" data-game="critical">
+                <div class="card-header">
+                    <h2 class="card-title">Critical Thinking</h2>
+                </div>
+                <div class="card-value" id="criticalScore">0</div>
+                <div class="card-label">Latest Score</div>
+                <div class="card-stats">
+                    <div>Problems Solved: <span id="criticalSolved">0</span></div>
+                    <div>Accuracy: <span id="criticalAccuracy">0%</span></div>
+                </div>
+            </div>
+
+            <!-- Emotion Recognition Card -->
+            <div class="card" data-game="emotion">
+                <div class="card-header">
+                    <h2 class="card-title">Emotion Recognition</h2>
+                </div>
+                <div class="card-value" id="emotionScore">0</div>
+                <div class="card-label">Latest Score</div>
+                <div class="card-stats">
+                    <div>Correct Matches: <span id="emotionMatches">0</span></div>
+                    <div>Accuracy: <span id="emotionAccuracy">0%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="chart-card">
+                <div class="card-header">
+                    <h2 class="card-title">Performance History</h2>
+                    <button id="refreshBtn" class="refresh-btn">Refresh</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <h2 class="history-title">Recent Activity</h2>
+            <table id="historyTable">
+                <thead>
+                    <tr>
+                        <th>Game</th>
+                        <th>Score</th>
+                        <th>Accuracy</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Serve different game pages
+app.get('/memory', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/Memory/index.html'));
+});
+
+app.get('/critical-thinking', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/criticalthinking/index.html'));
+});
+
+app.get('/emotion-game', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/emotion/index.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, '../front-end/dashboard/index.html'));
+});
+        let gameData = {
+            memory: { history: [], latest: null },
+            critical: { history: [], latest: null },
+            emotion: { history: [], latest: null }
+        };
+
+        let currentChart = null;  // Store the current chart instance
+
+        // Load data for all games
+        async function loadAllData() {
+            try {
+                const timestamp = new Date().toLocaleString();
+                document.getElementById('lastUpdated').textContent = `Last updated: ${timestamp}`;
+
+                // Load data for each game
+                await Promise.all([
+                    loadGameData('memory'),
+                    loadGameData('critical'),
+                    loadGameData('emotion')
+                ]);
+
+                updateDashboard();
+                updateChart();
+                updateHistoryTable();
+            } catch (error) {
+                console.error('Error loading data:', error);
+            }
+        }
+
+        // Load data for a specific game
+        async function loadGameData(game) {
+            try {
+                const response = await fetch(`http://localhost:5003/api/scores/${game}`);
+                const data = await response.json();
+                gameData[game].history = data.history || [];
+                gameData[game].latest = data.latest || null;
+                updateGameCard(game);
+            } catch (error) {
+                console.error(`Error loading ${game} data:`, error);
+            }
+        }
+
+        // Update individual game card
+        function updateGameCard(game) {
+            const latest = gameData[game].latest;
+            if (!latest) return;
+
+            document.getElementById(`${game}Score`).textContent = latest.score;
+            document.getElementById(`${game}Accuracy`).textContent = `${latest.accuracy}%`;
+
+            // Update game-specific stats
+            switch (game) {
+                case 'memory':
+                    document.getElementById('memoryStreak').textContent = latest.streak || 0;
+                    break;
+                case 'critical':
+                    document.getElementById('criticalSolved').textContent = latest.solved || 0;
+                    break;
+                case 'emotion':
+                    document.getElementById('emotionMatches').textContent = latest.matches || 0;
+                    break;
+            }
+        }
+
+        // Update performance chart
+        function updateChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const activeGame = document.querySelector('.tab-btn.active')?.dataset.game || 'all';
+            
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            let datasets = [];
+            let allDates = new Set();
+
+            // Collect all dates and scores
+            Object.values(gameData).forEach(data => {
+                if (data.history) {
+                    data.history.forEach(entry => {
+                        if (entry.score > 0) { // Only add valid scores
+                            allDates.add(new Date(entry.date).toLocaleDateString());
+                        }
+                    });
+                }
+            });
+
+            // Convert to array and sort chronologically
+            let sortedDates = Array.from(allDates).sort((a, b) => new Date(a) - new Date(b));
+
+            // Only keep the last 10 dates for clarity
+            if (sortedDates.length > 10) {
+                sortedDates = sortedDates.slice(-10);
+            }
+
+            if (activeGame === 'all') {
+                Object.entries(gameData).forEach(([game, data]) => {
+                    if (data.history && data.history.length > 0) {
+                        const scores = new Array(sortedDates.length).fill(null);
+                        data.history
+                            .filter(entry => entry.score > 0) // Filter out invalid scores
+                            .forEach(entry => {
+                                const dateStr = new Date(entry.date).toLocaleDateString();
+                                const index = sortedDates.indexOf(dateStr);
+                                if (index !== -1) {
+                                    scores[index] = entry.score;
+                                }
+                            });
+
+                        // Only add dataset if it has valid scores
+                        if (scores.some(score => score !== null)) {
+                            datasets.push({
+                                label: game.charAt(0).toUpperCase() + game.slice(1),
+                                data: scores,
+                                borderColor: getGameColor(game),
+                                backgroundColor: getGameColor(game) + '20',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 6,
+                                pointHoverRadius: 10,
+                                borderWidth: 3
+                            });
+                        }
+                    }
+                });
+            } else {
+                const data = gameData[activeGame];
+                if (data.history && data.history.length > 0) {
+                    const scores = new Array(sortedDates.length).fill(null);
+                    data.history
+                        .filter(entry => entry.score > 0)
+                        .forEach(entry => {
+                            const dateStr = new Date(entry.date).toLocaleDateString();
+                            const index = sortedDates.indexOf(dateStr);
+                            if (index !== -1) {
+                                scores[index] = entry.score;
+                            }
+                        });
+
+                    if (scores.some(score => score !== null)) {
+                        datasets = [{
+                            label: activeGame.charAt(0).toUpperCase() + activeGame.slice(1),
+                            data: scores,
+                            borderColor: getGameColor(activeGame),
+                            backgroundColor: getGameColor(activeGame) + '20',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointHoverRadius: 10,
+                            borderWidth: 3
+                        }];
+                    }
+                }
+            }
+
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: { 
+                    labels: sortedDates,
+                    datasets 
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        duration: 750,
+                        easing: 'easeInOutQuart'
+                    },
+                    layout: {
+                        padding: {
+                            top: 10,
+                            right: 25,
+                            bottom: 10,
+                            left: 25
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#fff',
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                padding: 10
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#fff',
+                                maxRotation: 45,
+                                minRotation: 45,
+                                font: {
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                padding: 10
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#fff',
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            padding: 15,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y} points`;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+        }
+
+        // Update history table
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyTable').querySelector('tbody');
+            tbody.innerHTML = '';
+
+            const activeGame = document.querySelector('.tab-btn.active')?.dataset.game || 'all';
+            let allHistory = [];
+
+            if (activeGame === 'all') {
+                Object.entries(gameData).forEach(([game, data]) => {
+                    allHistory.push(...data.history.map(h => ({...h, game})));
+                });
+            } else {
+                allHistory = gameData[activeGame].history.map(h => ({...h, game: activeGame}));
+            }
+
+            // Sort by date descending
+            allHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            allHistory.forEach(entry => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${entry.game.charAt(0).toUpperCase() + entry.game.slice(1)}</td>
+                    <td>${entry.score}</td>
+                    <td>${entry.accuracy}%</td>
+                    <td>${new Date(entry.date).toLocaleString()}</td>
+                `;
+            });
+        }
+
+        // Update dashboard with data
+        function updateDashboard() {
+            Object.entries(gameData).forEach(([game, data]) => {
+                updateGameCard(game);
+            });
+        }
+
+        function getGameColor(game) {
+            const colors = {
+                memory: '#00f0ff',    // Neon blue
+                critical: '#ff00ff',  // Plasma pink
+                emotion: '#ffff00'    // Neon yellow
+            };
+            return colors[game] || '#ffffff';
+        }
+
+        // Load initial data
+        loadAllData();
+
+        // Add click handlers for tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                updateChart();
+                updateHistoryTable();
+            });
+        });
+
+        // Add refresh button handler
+        document.getElementById('refreshBtn').addEventListener('click', loadAllData);
+
+    </script>
+</body>
+</html>
